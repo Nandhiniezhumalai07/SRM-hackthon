@@ -4,9 +4,9 @@ from fastapi.staticfiles import StaticFiles
 import models, database
 import os
 import hashlib
-from routers import reports, users, ai_predict, auth
+from routers import reports, users, ai_predict, auth, mlas
 
-# Ensure uploads directory exists
+# Ensure models are created in the database
 if not os.path.exists("uploads"):
     os.makedirs("uploads")
 
@@ -31,6 +31,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(reports.router)
 app.include_router(ai_predict.router)
+app.include_router(mlas.router)
 
 # ─── Seed Default Admin on Startup ────────────────────────────────────────────
 def seed_admin():
@@ -56,7 +57,35 @@ def seed_admin():
     finally:
         db.close()
 
+def seed_mlas():
+    db = database.SessionLocal()
+    try:
+        if db.query(models.MLA).count() == 0:
+            seed_data = [
+                {"name": "M. K. Stalin", "constituency": "Kolathur", "mobile": "9876543210", "address": "Kolathur MLA Office, Chennai"},
+                {"name": "Udhayanidhi Stalin", "constituency": "Chepauk–Thiruvallikeni", "mobile": "9876500001", "address": "Chepauk Constituency Office, Chennai"},
+                {"name": "P. K. Sekar Babu", "constituency": "Harbour", "mobile": "9876500002", "address": "Harbour MLA Office, Chennai"},
+                {"name": "Ma. Subramanian", "constituency": "Saidapet", "mobile": "9876500003", "address": "Saidapet MLA Office, Chennai"},
+                {"name": "J. Karunanidhi", "constituency": "T. Nagar", "mobile": "9876500004", "address": "T Nagar MLA Office, Chennai"},
+                {"name": "Thamimun Ansari", "constituency": "Manamadurai", "mobile": "9876500005", "address": "Manamadurai MLA Office"},
+                {"name": "K. Ponmudi", "constituency": "Tirukkoyilur", "mobile": "9876500006", "address": "Tirukkoyilur MLA Office"},
+                {"name": "S. Muthusamy", "constituency": "Erode West", "mobile": "9876500007", "address": "Erode West MLA Office"},
+                {"name": "V. Senthilbalaji", "constituency": "Karur", "mobile": "9876500008", "address": "Karur MLA Office"},
+                {"name": "K. N. Nehru", "constituency": "Tiruchirappalli West", "mobile": "9876500009", "address": "Trichy MLA Office"},
+            ]
+            for m in seed_data:
+                db.add(models.MLA(**m))
+            db.commit()
+            print("✅ Default MLAs seeded.")
+        else:
+            print("ℹ️  MLA directory already seeded.")
+    except Exception as e:
+        print(f"❌ MLA seeding error: {e}")
+    finally:
+        db.close()
+
 seed_admin()
+seed_mlas()
 
 # ─── Smart AI Detect Endpoint ─────────────────────────────────────────────────
 @app.post("/detect")

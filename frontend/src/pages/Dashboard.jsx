@@ -13,6 +13,7 @@ import {
 
 import { Activity, AlertTriangle, AlertCircle, Clock, TrendingUp, Loader2 } from 'lucide-react';
 import HazardCard from '../components/HazardCard';
+import { useAuth } from '../contexts/AuthContext';
 
 ChartJS.register(
   CategoryScale,
@@ -39,6 +40,7 @@ const CHART_OPTIONS = {
 };
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState({
     total_hazards: 0,
     unresolved_count: 0,
@@ -129,17 +131,17 @@ export default function Dashboard() {
         <div className="glass-card px-8 py-6 rounded-3xl flex flex-wrap gap-x-12 gap-y-4 border-white/10 group hover:border-lavender-500/30 transition-all duration-500">
           <div className="relative">
             <span className="text-slate-500 block uppercase text-[9px] font-black tracking-[0.2em] mb-1">Constituency</span>
-            <span className="text-white font-black text-lg group-hover:text-lavender-400 transition-colors">Mumbai West</span>
+            <span className="text-white font-black text-lg group-hover:text-lavender-400 transition-colors">{user?.constituency || 'N/A'}</span>
           </div>
           <div className="w-px h-10 bg-white/5 hidden md:block"></div>
           <div>
             <span className="text-slate-500 block uppercase text-[9px] font-black tracking-[0.2em] mb-1">Village hub</span>
-            <span className="text-white font-black text-lg">Bandra</span>
+            <span className="text-white font-black text-lg">{user?.village || 'N/A'}</span>
           </div>
           <div className="w-px h-10 bg-white/5 hidden md:block"></div>
           <div>
             <span className="text-slate-500 block uppercase text-[9px] font-black tracking-[0.2em] mb-1">Sector Ward</span>
-            <span className="text-lavender-400 font-black text-lg" style={{ color: 'var(--primary)' }}>Node-12</span>
+            <span className="text-lavender-400 font-black text-lg" style={{ color: 'var(--primary)' }}>{user?.ward || 'N/A'}</span>
           </div>
         </div>
       </div>

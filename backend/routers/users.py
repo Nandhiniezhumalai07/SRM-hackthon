@@ -39,6 +39,22 @@ def read_user(user_id: int, db: Session = Depends(database.get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
+@router.patch("/{user_id}/profile", response_model=schemas.User)
+def update_user_profile(user_id: int, profile_data: schemas.UserProfileUpdate, db: Session = Depends(database.get_db)):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = profile_data.dict(exclude_unset=True)
+    for key, value in update_data.items():
+        setattr(db_user, key, value)
+    
+    # Mark profile as completed
+    db_user.profile_completed = True
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
 @router.get("/leaderboard/{city}", response_model=List[schemas.User])
 def get_leaderboard(city: str, db: Session = Depends(database.get_db)):
     """Get top 10 users per city for leaderboard."""

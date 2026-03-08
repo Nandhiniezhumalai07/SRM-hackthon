@@ -27,11 +27,18 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (userData) => {
+    // Keep existing auth tokens/fields and just override with updated user data
+    const updated = { ...user, ...userData };
+    localStorage.setItem('roadwatch_user', JSON.stringify(updated));
+    setUser(updated);
+  };
+
   const isLoggedIn = !!user;
   const isAdmin    = user?.role === 'admin';
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, isAdmin, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

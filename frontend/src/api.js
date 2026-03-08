@@ -16,7 +16,8 @@ export const loginUser     = (data) => API.post('/auth/login', data);
 
 // ─── User / Profile Endpoints ──────────────────────────────────────────────────
 export const createUser    = (data) => API.post('/users/', data);
-export const getUser       = (id)   => API.get(`/users/${id}`);
+export const getUserInfo      = (id)   => API.get(`/users/${id}`);
+export const updateUserProfile = (id, data) => API.patch(`/users/${id}/profile`, data);
 export const getLeaderboard = (city) => API.get(`/users/leaderboard/${city}`);
 
 // ─── Report Endpoints ─────────────────────────────────────────────────────────
@@ -28,6 +29,13 @@ export const detectHazard  = (imageFile) => {
 export const createReport     = (data)          => API.post('/reports/', data);
 export const getAllReports     = ()              => API.get('/reports/');
 export const getDashboardStats = ()             => API.get('/reports/dashboard/stats');
+export const resolvePrediction = (imageId, isCorrect) =>
+  API.post(`/predict/resolve/${imageId}?is_correct=${isCorrect}`);
+
+// MLA Directory
+export const getMlas    = () => API.get('/mlas/');
+export const addMla     = (data) => API.post('/mlas/', data);
+export const deleteMla  = (id) => API.delete(`/mlas/${id}`);
 export const resolveReport    = (id)            => API.post(`/reports/${id}/resolve`);
 export const confirmRepair    = (id, data)      => API.post(`/reports/${id}/confirm`, data);
 

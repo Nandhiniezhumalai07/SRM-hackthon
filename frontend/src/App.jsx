@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Link, useNavigate } from 'react-router-dom';
 import { Map, AlertTriangle, LayoutDashboard, Trophy, User, Menu, X, ChevronRight,
-         Activity, Headset, ShieldCheck, UserPlus, LogIn, LogOut } from 'lucide-react';
+         Activity, Headset, ShieldCheck, UserPlus, LogIn, LogOut, Landmark } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 
 // Pages
@@ -15,6 +15,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import Status         from './pages/Status';
 import Support        from './pages/Support';
 import Leaderboard    from './components/Leaderboard';
+import MLADirectory   from './pages/MLADirectory';
+import CompleteProfile from './pages/CompleteProfile';
 
 function AppContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -26,6 +28,7 @@ function AppContent() {
     { path: '/leaderboard',label: 'Championship',  icon: Trophy },
     { path: '/dashboard',  label: 'Analytics',     icon: LayoutDashboard },
     { path: '/status',     label: 'Status',        icon: Activity },
+    { path: '/mla-directory', label: 'MLA Directory', icon: Landmark },
   ];
 
   const getInitials = (name) => {
@@ -216,6 +219,8 @@ function AppContent() {
             <Route path="/leaderboard"element={<Leaderboard />} />
             <Route path="/status"     element={<Status />} />
             <Route path="/support"    element={<Support />} />
+            <Route path="/mla-directory" element={<MLADirectory />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
           </Routes>
         </div>
       </main>

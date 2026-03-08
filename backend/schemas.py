@@ -14,6 +14,7 @@ class UserBase(BaseModel):
     village: Optional[str] = None
     ward: Optional[str] = None
     panchayat: Optional[str] = None
+    profile_completed: bool = False
 
 class UserCreate(UserBase):
     pass
@@ -41,6 +42,7 @@ class LoginResponse(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     points: int = 0
+    profile_completed: bool = False
 
     class Config:
         from_attributes = True
@@ -53,6 +55,17 @@ class User(UserBase):
 
     class Config:
         from_attributes = True
+
+class UserProfileUpdate(BaseModel):
+    name: Optional[str] = None
+    city: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    bio: Optional[str] = None
+    constituency: Optional[str] = None
+    village: Optional[str] = None
+    ward: Optional[str] = None
+    panchayat: Optional[str] = None
 
 # ─── Confirmation Schemas ─────────────────────────────────────────────────────
 
@@ -89,8 +102,8 @@ class ReportCreate(ReportBase):
 
 class ReportStatusUpdate(BaseModel):
     """Admin — update status/priority/approval."""
-    admin_status: Optional[str] = None    # Pending, In Progress, Completed
-    priority: Optional[str] = None        # Low, Moderate, Critical
+    admin_status: Optional[str] = None
+    priority: Optional[str] = None
     is_approved: Optional[bool] = None    # True=approve, False=reject
 
 class Report(ReportBase):
@@ -99,12 +112,31 @@ class Report(ReportBase):
     severity_score: float
     predicted_risk: float
     status: str
-    admin_status: str = "Pending"
+    admin_status: str = "Submitted"
     is_approved: bool = True
     estimated_cost: float
+    recommended_action: Optional[str] = None
     verification_count: int = 0
-    created_at: datetime.datetime
     confirmations: List[Confirmation] = []
 
     class Config:
-        from_attributes = True
+        orm_mode = True
+
+# ─── MLA Schemas ─────────────────────────────────────────────────────────────
+
+class MLACreate(BaseModel):
+    name: str
+    constituency: str
+    mobile: str
+    address: str
+
+class MLA(BaseModel):
+    id: int
+    name: str
+    constituency: str
+    mobile: str
+    address: str
+    created_at: datetime.datetime
+
+    class Config:
+        orm_mode = True

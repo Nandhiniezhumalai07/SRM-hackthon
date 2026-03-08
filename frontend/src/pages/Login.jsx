@@ -29,7 +29,15 @@ export default function Login() {
     try {
       const res = await loginUser({ user_login_id: userId, password, role });
       login(res.data);
-      navigate(res.data.role === 'admin' ? '/admin' : '/leaderboard');
+      
+      // Determine redirection based on role and profile completion
+      if (res.data.role === 'admin') {
+        navigate('/admin');
+      } else if (!res.data.profile_completed) {
+        navigate('/complete-profile');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err?.response?.data?.detail || 'Login failed. Check your credentials.');
     } finally {

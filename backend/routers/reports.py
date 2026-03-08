@@ -177,7 +177,8 @@ def confirm_repair(report_id: int, confirmation: schemas.ConfirmationCreate, db:
         
         # Now correctly triggers at exactly 3 votes
         if fixed_count >= 3:
-            db_report.status = "Verified Resolved"
+            db_report.status = "Completed"
+            db_report.admin_status = "Completed"
             # Award original reporter +30 points bonus
             reporter = db.query(models.User).filter(models.User.id == db_report.user_id).first()
             if reporter:
@@ -197,7 +198,10 @@ def admin_update_report(
         raise HTTPException(status_code=404, detail="Report not found")
 
     if update.admin_status is not None:
-        valid_statuses = ["Pending", "In Progress", "Completed", "Rejected"]
+        valid_statuses = [
+            "Submitted", "Under Review", "Hazard Verified", 
+            "Sent to Government", "In Progress", "Completed", "Rejected"
+        ]
         if update.admin_status not in valid_statuses:
             raise HTTPException(status_code=400, detail=f"Status must be one of {valid_statuses}")
         db_report.admin_status = update.admin_status
@@ -220,14 +224,14 @@ def admin_update_report(
 def get_dashboard_stats(db: Session = Depends(database.get_db)):
     import datetime
     total_hazards = db.query(models.Report).count()
-    unresolved_count = db.query(models.Report).filter(models.Report.status != "Verified Resolved").count()
+    unresolved_count = db.query(models.Report).filter(models.Report.status != "Completed").count()
     high_severity_pending = db.query(models.Report).filter(
         models.Report.severity == "High",
-        models.Report.status != "Verified Resolved"
+        models.Report.status != "Completed"
     ).count()
     
     resolved_reports = db.query(models.Report).filter(
-        models.Report.status == "Verified Resolved"
+        models.Report.status == "Completed"
     ).all()
     
     avg_resolution_hours = 0.0

@@ -11,14 +11,21 @@ import {
   RefreshCw, ChevronDown, Loader2, MapPin, Filter
 } from 'lucide-react';
 
-const STATUS_OPTIONS   = ['Pending', 'In Progress', 'Completed', 'Rejected'];
+const STATUS_OPTIONS = [
+  'Submitted', 'Under Review', 'Hazard Verified', 
+  'Sent to Government', 'In Progress', 'Completed', 'Rejected'
+];
+
 const PRIORITY_OPTIONS = ['Low', 'Moderate', 'Critical'];
 
 const STATUS_STYLE = {
-  'Pending':     'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
-  'In Progress': 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  'Completed':   'bg-green-500/10 text-green-400 border-green-500/20',
-  'Rejected':    'bg-red-500/10 text-red-400 border-red-500/20',
+  'Submitted':          'bg-slate-500/10 text-slate-400 border-slate-500/20',
+  'Under Review':       'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  'Hazard Verified':    'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+  'Sent to Government': 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+  'In Progress':        'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  'Completed':          'bg-green-500/10 text-green-400 border-green-500/20',
+  'Rejected':           'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
 const PRIORITY_STYLE = {
@@ -64,12 +71,17 @@ export default function AdminDashboard() {
     ? reports
     : reports.filter(r => (r.admin_status || r.status) === filter);
 
+  // Group some statuses together for the quick filter tabs if needed, 
+  // or show the most important ones.
   const counts = {
-    All:         reports.length,
-    Pending:     reports.filter(r => (r.admin_status || r.status) === 'Pending').length,
-    'In Progress': reports.filter(r => (r.admin_status || r.status) === 'In Progress').length,
-    Completed:   reports.filter(r => (r.admin_status || r.status) === 'Completed').length,
-    Rejected:    reports.filter(r => (r.admin_status || r.status) === 'Rejected').length,
+    All:                 reports.length,
+    'Submitted':         reports.filter(r => (r.admin_status || r.status) === 'Submitted').length,
+    'Under Review':      reports.filter(r => (r.admin_status || r.status) === 'Under Review').length,
+    'Hazard Verified':   reports.filter(r => (r.admin_status || r.status) === 'Hazard Verified').length,
+    'Sent to Govt':      reports.filter(r => (r.admin_status || r.status) === 'Sent to Government').length,
+    'In Progress':       reports.filter(r => (r.admin_status || r.status) === 'In Progress').length,
+    Completed:           reports.filter(r => (r.admin_status || r.status) === 'Completed').length,
+    Rejected:            reports.filter(r => (r.admin_status || r.status) === 'Rejected').length,
   };
 
   if (!isAdmin) return null;
@@ -99,20 +111,24 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Bar */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-        {Object.entries(counts).map(([label, count]) => (
-          <button
-            key={label}
-            onClick={() => setFilter(label)}
-            className={`glass-card rounded-2xl p-5 text-center border transition-all hover:scale-105 ${
-              filter === label ? 'border-lavender-500/50' : 'border-white/5'
-            }`}
-            style={filter === label ? { borderColor: 'var(--primary)', backgroundColor: 'rgba(167,139,250,0.05)' } : {}}
-          >
-            <div className="text-3xl font-black text-white italic">{count}</div>
-            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest mt-1">{label}</div>
-          </button>
-        ))}
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+        {Object.entries(counts).map(([label, count]) => {
+          // Adjust filter string for 'Sent to Govt'
+          const filterValue = label === 'Sent to Govt' ? 'Sent to Government' : label;
+          return (
+            <button
+              key={label}
+              onClick={() => setFilter(filterValue)}
+              className={`glass-card rounded-2xl p-4 text-center border transition-all hover:scale-105 ${
+                filter === filterValue ? 'border-lavender-500/50' : 'border-white/5'
+              }`}
+              style={filter === filterValue ? { borderColor: 'var(--primary)', backgroundColor: 'rgba(167,139,250,0.05)' } : {}}
+            >
+              <div className="text-2xl font-black text-white italic">{count}</div>
+              <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest mt-1 leading-tight">{label}</div>
+            </button>
+          )
+        })}
       </div>
 
       {/* Filter indicator */}
@@ -134,7 +150,7 @@ export default function AdminDashboard() {
       ) : (
         <div className="space-y-3">
           {filteredReports.map(report => {
-            const status   = report.admin_status || report.status || 'Pending';
+            const status   = report.admin_status || report.status || 'Submitted';
             const priority = report.priority || 'Low';
             const isUpdating = updating === report.id;
 
@@ -178,7 +194,8 @@ export default function AdminDashboard() {
                       value={status}
                       disabled={isUpdating}
                       onChange={e => handleUpdate(report.id, { admin_status: e.target.value })}
-                      className={`w-full appearance-none rounded-xl border px-3 py-2 text-xs font-black uppercase tracking-widest cursor-pointer bg-slate-900 focus:outline-none focus:ring-1 transition-all ${STATUS_STYLE[status] || STATUS_STYLE['Pending']}`}
+                      className={`w-full appearance-none rounded-xl border px-3 py-2 text-xs font-black tracking-widest cursor-pointer bg-slate-900 focus:outline-none focus:ring-1 transition-all ${STATUS_STYLE[status] || STATUS_STYLE['Submitted']}`}
+                      style={{ textOverflow: 'ellipsis' }}
                     >
                       {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
@@ -194,7 +211,7 @@ export default function AdminDashboard() {
                       value={priority}
                       disabled={isUpdating}
                       onChange={e => handleUpdate(report.id, { priority: e.target.value })}
-                      className={`w-full appearance-none rounded-xl border px-3 py-2 text-xs font-black uppercase tracking-widest cursor-pointer bg-slate-900 focus:outline-none focus:ring-1 transition-all ${PRIORITY_STYLE[priority] || PRIORITY_STYLE['Low']}`}
+                      className={`w-full appearance-none rounded-xl border px-3 py-2 text-xs font-black tracking-widest cursor-pointer bg-slate-900 focus:outline-none focus:ring-1 transition-all ${PRIORITY_STYLE[priority] || PRIORITY_STYLE['Low']}`}
                     >
                       {PRIORITY_OPTIONS.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
@@ -205,20 +222,12 @@ export default function AdminDashboard() {
                 {/* Approve / Reject */}
                 <div className="lg:col-span-1 flex gap-2">
                   <button
-                    disabled={isUpdating || report.is_approved}
-                    onClick={() => handleUpdate(report.id, { is_approved: true })}
-                    title="Approve"
-                    className="flex-1 p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 hover:bg-green-500/20 transition-all disabled:opacity-30"
-                  >
-                    {isUpdating ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : <CheckCircle className="h-4 w-4 mx-auto" />}
-                  </button>
-                  <button
-                    disabled={isUpdating || !report.is_approved}
-                    onClick={() => handleUpdate(report.id, { is_approved: false })}
+                    disabled={isUpdating || report.is_approved === false || status === 'Rejected'}
+                    onClick={() => handleUpdate(report.id, { is_approved: false, admin_status: 'Rejected' })}
                     title="Reject"
                     className="flex-1 p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all disabled:opacity-30"
                   >
-                    <XCircle className="h-4 w-4 mx-auto" />
+                    {isUpdating && status === 'Rejected' ? <Loader2 className="h-4 w-4 animate-spin mx-auto" /> : <XCircle className="h-4 w-4 mx-auto" />}
                   </button>
                 </div>
               </div>
