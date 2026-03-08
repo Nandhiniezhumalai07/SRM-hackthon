@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, NavLink, Link, useNavigate, Navigate } from 'react-router-dom';
 import { Map, AlertTriangle, LayoutDashboard, Trophy, User, Menu, X, ChevronRight,
          Activity, Headset, ShieldCheck, UserPlus, LogIn, LogOut, Landmark } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
@@ -24,7 +24,7 @@ function AppContent() {
   const navigate = useNavigate();
 
   const navItems = [
-    { path: '/',           label: 'Environment',  icon: Map },
+    { path: '/map',           label: 'Environment',  icon: Map },
     { path: '/leaderboard',label: 'Championship',  icon: Trophy },
     { path: '/dashboard',  label: 'Analytics',     icon: LayoutDashboard },
     { path: '/status',     label: 'Status',        icon: Activity },
@@ -209,7 +209,8 @@ function AppContent() {
       <main className={`flex-1 min-h-screen transition-all duration-300 ${isSidebarOpen ? 'ml-80' : 'ml-0'}`}>
         <div className="max-w-7xl mx-auto p-8 pt-24 lg:pt-12">
           <Routes>
-            <Route path="/"           element={<MapView />} />
+            <Route path="/"           element={<Navigate to="/login" replace />} />
+            <Route path="/map"        element={<MapView />} />
             <Route path="/report"     element={<ReportHazard />} />
             <Route path="/profile"    element={<Profile />} />
             <Route path="/register"   element={<Register />} />
@@ -220,7 +221,7 @@ function AppContent() {
             <Route path="/status"     element={<Status />} />
             <Route path="/support"    element={<Support />} />
             <Route path="/mla-directory" element={<MLADirectory />} />
-            <Route path="/complete-profile" element={<CompleteProfile />} />
+            <Route path="/activate-profile" element={<CompleteProfile />} />
           </Routes>
         </div>
       </main>

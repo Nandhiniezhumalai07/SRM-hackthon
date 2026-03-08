@@ -34,7 +34,7 @@ export default function Login() {
       if (res.data.role === 'admin') {
         navigate('/admin');
       } else if (!res.data.profile_completed) {
-        navigate('/complete-profile');
+        navigate('/activate-profile');
       } else {
         navigate('/dashboard');
       }

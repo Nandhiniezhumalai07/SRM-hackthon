@@ -30,7 +30,7 @@ export default function Register() {
       const res = await registerUser(form);
       login(res.data);
       setSuccess(true);
-      setTimeout(() => navigate('/complete-profile'), 2000);
+      setTimeout(() => navigate('/activate-profile'), 2000);
     } catch (err) {
       setError(err?.response?.data?.detail || 'Registration failed.');
     } finally { setLoading(false); }
